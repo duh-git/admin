@@ -1,0 +1,23 @@
+#!/bin/bash
+
+
+dir=$1
+
+if [[ -z $dir ]]; then	
+	echo "Usage $0: <dir>"; exit 1
+fi
+
+if [[ ! -d $dir ]]; then echo "Folder '$dir' does not exist"; exit 1; fi
+
+
+find $dir -type f -name '*' | while read -r file; do
+	filename=${file##*/}
+	ext=${filename##*.}
+	if [[ $filename != $ext ]]; then
+		mkdir $dir/$ext
+		mv $file $dir/$ext
+	else
+		mkdir $dir/no_extension
+		mv $file $dir/no_extension
+	fi
+done

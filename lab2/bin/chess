@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+size=8
+
+
+if [ $# -ne 0 ]; then
+	if [ $1 -gt 0 ] 2>/dev/null; then
+		size=$1
+	else
+		echo "Invalid input"
+		exit 1
+	fi
+fi
+
+
+for ((i=0; i<size; i++)); do
+	for ((j=0; j<size; j++)); do
+		if (( (i + j) % 2 == 0 )); then
+			echo -ne "\e[47m  \e[0m"
+		else
+			echo -ne "\e[40m  \e[0m"
+		fi
+	done
+	echo
+done

@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo "Usage: $0 <dir>"
+    exit 1
+fi
+
+dir="$1"
+
+if [ ! -d "$dir" ]; then
+    echo "Folder '$dir' does not exist"
+    exit 1
+fi
+
+calculate_size() {
+    local path="$1"
+    local total_bytes=0
+    
+    while read -r size; do
+        total_bytes=$((total_bytes + size))
+    done < <(find "$path" -type f -printf "%s\n")
+    
+    echo "$total_bytes"
+}
+
+human_readable() {
+    local bytes="$1"
+    local units=('B' 'K' 'M' 'G' 'T')
+    local unit=0
+    
+    while (( bytes > 1024 )) && (( unit < 4 )); do
+        bytes=$((bytes / 1024))
+        unit=$((unit + 1))
+    done
+    
+    echo "${bytes}${units[$unit]}"
+}
+
+total_bytes=$(calculate_size "$dir")
+human_size=$(human_readable "$total_bytes")
+
+echo "$dir: $human_size"

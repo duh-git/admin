@@ -1,0 +1,33 @@
+#!/bin/bash
+
+
+while getopts "s:" opt; do
+	case $opt in
+		s) 
+			stop_file="$OPTARG"
+			if [[ ! -f $stop_file ]]; then echo "Stop-file '$stop_file' does not exist"; exit 1; fi
+			;;
+		*) echo "Invalid input"; echo "Usage: $0 [-s STOP_FILE] [<dir> <file>] <top_n>"; exit 1;;
+	esac
+done
+shift $((OPTIND -1))
+
+
+dir=$1
+ext=$2
+n=$3
+
+
+if [[ $# -eq 0 ]]; then echo "Usage: $0 [-s STOP_FILE] [<dir> | <file>] <top_n>"; exit 1; fi
+if [[ ! -e $dir ]]; then echo "Folder or file '$dir' does not exist"; exit 1; fi
+
+command="find '$dir' -type f -name '*.$ext' -exec cat {} + | tr -d '[:punct:]' | tr '[:space:]' '\n' | tr '[:upper:]' '[:lower:]' | awk 'NF'"
+
+if [[ -n "$stop_file" && -f "$stop_file" ]]; then
+	command+=" | grep -vwf '$stop_file'"
+fi
+
+command+=" | sort | uniq -c | awk -F ' ' '{print \$1, \"\\t\", \$2}' | sort -rn | head -n '$n'"
+
+
+eval "$command"

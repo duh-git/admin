@@ -1,0 +1,20 @@
+#!/bin/bash
+
+
+if [[ $# -eq 0 ]]; then echo "Usage $0: <dir_to_backup> <dest_dir>"; exit 1; fi
+
+
+src=$1
+dst=$2
+datestamp=$(date +%Y-%m-%d)
+backup="$dst/backup_$datestamp.tar.gz"
+
+if [ ! -d $src ]; then echo "Folder '$src' does not exist"; exit 1; fi
+
+mkdir -p $dst
+
+tar -czf $backup $src
+
+if [ $? -eq 0 ]; then echo "Success"; else echo "Erorr while creating"; fi
+
+find $dst -name "backup_*.tar.gz" -mtime +7 -exec rm -f {} \;
