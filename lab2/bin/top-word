@@ -1,9 +1,8 @@
 #!/bin/bash
 
-
 while getopts "s:" opt; do
 	case $opt in
-		s) 
+		s)
 			stop_file="$OPTARG"
 			if [[ ! -f $stop_file ]]; then echo "Stop-file '$stop_file' does not exist"; exit 1; fi
 			;;
@@ -12,11 +11,9 @@ while getopts "s:" opt; do
 done
 shift $((OPTIND -1))
 
-
 dir=$1
 ext=$2
 n=$3
-
 
 if [[ $# -eq 0 ]]; then echo "Usage: $0 [-s STOP_FILE] [<dir> | <file>] <top_n>"; exit 1; fi
 if [[ ! -e $dir ]]; then echo "Folder or file '$dir' does not exist"; exit 1; fi
@@ -28,6 +25,5 @@ if [[ -n "$stop_file" && -f "$stop_file" ]]; then
 fi
 
 command+=" | sort | uniq -c | awk -F ' ' '{print \$1, \"\\t\", \$2}' | sort -rn | head -n '$n'"
-
 
 eval "$command"
